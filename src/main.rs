@@ -8,8 +8,7 @@ fn main() {
     let contents = fs::read_to_string("morse.json").expect("Could not read morse data");
     let parsed = json::parse(contents.as_str()).unwrap();
 
-    for i in 0..parsed["Letters"].len() {
-        let letter = &parsed["Letters"][i];
+    for letter in parsed["Letters"].members() {
         morse.insert(
             letter["morse"].as_str().unwrap(),
             letter["alpha"].as_str().unwrap());
