@@ -1,172 +1,30 @@
+use serde::Deserialize;
+
 use std::collections::HashMap;
-use std::io;
+use std::{io, fs};
+
+#[derive(Deserialize)]
+struct MorseKey {
+    letters: Vec<MorsePair>,
+}
+
+#[derive(Deserialize)]
+struct MorsePair {
+    morse: String,
+    alpha: String,
+}
 
 fn main() {
-    let mut morse = HashMap::<String, String>::new();
-    morse.insert(
-        ".-".to_string(),
-        "A".to_string(),
-    );
-    morse.insert(
-        "-...".to_string(),
-        "B".to_string(),
-    );
-    morse.insert(
-        "-.-.".to_string(),
-        "C".to_string(),
-    );
-    morse.insert(
-        "-..".to_string(),
-        "D".to_string(),
-    );
-    morse.insert(
-        ".".to_string(),
-        "E".to_string(),
-    );
-    morse.insert(
-        "..-.".to_string(),
-        "F".to_string(),
-    );
-    morse.insert(
-        "--.".to_string(),
-        "G".to_string(),
-    );
-    morse.insert(
-        "....".to_string(),
-        "H".to_string(),
-    );
-    morse.insert(
-        "..".to_string(),
-        "I".to_string(),
-    );
-    morse.insert(
-        ".---".to_string(),
-        "J".to_string(),
-    );
-    morse.insert(
-        "-.-".to_string(),
-        "K".to_string(),
-    );
-    morse.insert(
-        ".-..".to_string(),
-        "L".to_string(),
-    );
-    morse.insert(
-        "--".to_string(),
-        "M".to_string(),
-    );
-    morse.insert(
-        "-.".to_string(),
-        "N".to_string(),
-    );
-    morse.insert(
-        "---".to_string(),
-        "O".to_string(),
-    );
-    morse.insert(
-        ".--.".to_string(),
-        "P".to_string(),
-    );
-    morse.insert(
-        "--.-".to_string(),
-        "Q".to_string(),
-    );
-    morse.insert(
-        ".-.".to_string(),
-        "R".to_string(),
-    );
-    morse.insert(
-        "...".to_string(),
-        "S".to_string(),
-    );
-    morse.insert(
-        "-".to_string(),
-        "T".to_string(),
-    );
-    morse.insert(
-        "..-".to_string(),
-        "U".to_string(),
-    );
-    morse.insert(
-        "...-".to_string(),
-        "V".to_string(),
-    );
-    morse.insert(
-        ".--".to_string(),
-        "W".to_string(),
-    );
-    morse.insert(
-        "-..-".to_string(),
-        "X".to_string(),
-    );
-    morse.insert(
-        "-.--".to_string(),
-        "Y".to_string(),
-    );
-    morse.insert(
-        "--..".to_string(),
-        "Z".to_string(),
-    );
-    morse.insert(
-        "/".to_string(),
-        " ".to_string(),
-    );
-    morse.insert(
-        ".----".to_string(),
-        "1".to_string(),
-    );
-    morse.insert(
-        "..---".to_string(),
-        "2".to_string(),
-    );
-    morse.insert(
-        "...--".to_string(),
-        "3".to_string(),
-    );
-    morse.insert(
-        "....-".to_string(),
-        "4".to_string(),
-    );
-    morse.insert(
-        ".....".to_string(),
-        "5".to_string(),
-    );
-    morse.insert(
-        "-....".to_string(),
-        "6".to_string(),
-    );
-    morse.insert(
-        "--...".to_string(),
-        "7".to_string(),
-    );
-    morse.insert(
-        "---..".to_string(),
-        "8".to_string(),
-    );
-    morse.insert(
-        "----.".to_string(),
-        "9".to_string(),
-    );
-    morse.insert(
-        "-----".to_string(),
-        "0".to_string(),
-    );
-    morse.insert(
-        "..--..".to_string(),
-        "?".to_string(),
-    );
-    morse.insert(
-        "-.-.--".to_string(),
-        "!".to_string(),
-    );
-    morse.insert(
-        ".-.-.-".to_string(),
-        ".".to_string(),
-    );
-    morse.insert(
-        "--..--".to_string(),
-        ",".to_string(),
-    );
+    let contents = fs::read_to_string("morse.json").expect("Could not read morse.json");
+    let parsed: MorseKey = serde_json::from_str(&contents).unwrap();
+
+    let mut morse = HashMap::<&str, &str>::new();
+    for letter in parsed.letters.iter() {
+        morse.insert(
+            &letter.morse,
+            &letter.alpha,
+        );
+    }
 
     loop {
     println!("Enter your Morse Code for translation or \"exit\" to exit:");
@@ -181,7 +39,7 @@ fn main() {
 
     let mut output: String = String::from("");
     for letter in letters {
-        output += morse.get(letter).unwrap_or(&String::from(""));
+        output += morse.get(letter).unwrap_or(&"");
     }
 
     println!("\n  -> {output}\n");
